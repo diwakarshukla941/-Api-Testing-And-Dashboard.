@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIVision - Real-time API Testing Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-network-wired"></i>
+                <span>APIVision</span>
+            </div>
+            <div class="endpoints-list">
+                <div class="endpoints-header">
+                    <h3>Endpoints</h3>
+                    <button id="addEndpoint" class="btn-add">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div id="endpointsList">
+                    <!-- Endpoints will be added here -->
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search endpoints...">
+                </div>
+                <div class="actions">
+                    <button id="testAll" class="btn-primary">
+                        <i class="fas fa-play"></i> Test All
+                    </button>
+                    <button id="exportResults" class="btn-secondary">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <div class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="metrics-overview">
+                    <div class="metric-card">
+                        <h3>Active Endpoints</h3>
+                        <p id="activeEndpoints">12</p>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> 2
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Success Rate</h3>
+                        <p id="successRate">98.5%</p>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> 0.5%
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Avg Response Time</h3>
+                        <p id="avgResponseTime">245ms</p>
+                        <div class="trend down">
+                            <i class="fas fa-arrow-down"></i> 12ms
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Error Rate</h3>
+                        <p id="errorRate">1.5%</p>
+                        <div class="trend down">
+                            <i class="fas fa-arrow-down"></i> 0.5%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-details">
+                    <div class="endpoint-form">
+                        <div class="form-header">
+                            <h2>Endpoint Configuration</h2>
+                            <div class="status-badge online">Online</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Method</label>
+                            <select id="httpMethod">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="text" id="endpointUrl" placeholder="https://api.example.com/endpoint">
+                        </div>
+                        <div class="form-group">
+                            <label>Headers</label>
+                            <div id="headersEditor" class="code-editor" contenteditable="true">
+                                {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer token"
+                                }</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Request Body</label>
+                            <div id="requestBody" class="code-editor" contenteditable="true">
+                                {
+                                "key": "value"
+                                }</div>
+                        </div>
+                        <div class="form-actions">
+                            <button id="sendRequest" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Request
+                            </button>
+                            <button id="saveEndpoint" class="btn-secondary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="response-panel">
+                        <div class="response-header">
+                            <h2>Response</h2>
+                            <div class="response-meta">
+                                <span class="status success">200 OK</span>
+                                <span class="time">245ms</span>
+                            </div>
+                        </div>
+                        <div class="response-tabs">
+                            <button class="tab-btn active">Response</button>
+                            <button class="tab-btn">Headers</button>
+                            <button class="tab-btn">Tests</button>
+                        </div>
+                        <div id="responseBody" class="response-content">
+                            <pre><code class="language-json">{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "name": "Example Response"
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monitoring-section">
+                    <h2>Performance Monitoring</h2>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="addEndpointModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Endpoint</h2>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="endpointName" placeholder="Endpoint name">
+            </div>
+            <div class="form-group">
+                <label>Method</label>
+                <select id="newHttpMethod">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>URL</label>
+                <input type="text" id="newEndpointUrl" placeholder="https://api.example.com/endpoint">
+            </div>
+            <div class="modal-actions">
+                <button id="createEndpoint" class="btn-primary">Create</button>
+                <button id="cancelCreate" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
